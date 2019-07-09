@@ -1,9 +1,6 @@
 package com.ifengxue.plugin.component;
 
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 public class AutoGeneratorSettings {
 
@@ -26,8 +23,42 @@ public class AutoGeneratorSettings {
   private JButton btnChooseRepositoryPackage;
   private JButton btnChooseSuperClass;
   private JCheckBox chkBoxGenerateService;
+	private JTextField textServicePackage;
+	private JButton btnChooseServicePackage;
+	private JTextField textServiceClass;
+	private JButton btnChooseService;
+	private JTextField textServiceImpClass;
+	private JButton btnChooseServiceImp;
 
-  public JPanel getRootComponent() {
+	public JCheckBox getChkBoxGenerateService() {
+		return chkBoxGenerateService;
+	}
+
+	public JTextField getTextServicePackage() {
+		return textServicePackage;
+	}
+
+	public JButton getBtnChooseServicePackage() {
+		return btnChooseServicePackage;
+	}
+
+	public JTextField getTextServiceClass() {
+		return textServiceClass;
+	}
+
+	public JButton getBtnChooseService() {
+		return btnChooseService;
+	}
+
+	public JTextField getTextServiceImpClass() {
+		return textServiceImpClass;
+	}
+
+	public JButton getBtnChooseServiceImp() {
+		return btnChooseServiceImp;
+	}
+
+	public JPanel getRootComponent() {
     return rootComponent;
   }
 
@@ -98,4 +129,8 @@ public class AutoGeneratorSettings {
   public JButton getBtnChooseSuperClass() {
     return btnChooseSuperClass;
   }
+
+	private void createUIComponents() {
+		// TODO: place custom component creation code here
+	}
 }

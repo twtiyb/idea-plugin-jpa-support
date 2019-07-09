@@ -14,6 +14,8 @@ import com.ifengxue.plugin.generator.config.TablesConfig.LineSeparator;
 import com.ifengxue.plugin.generator.config.TablesConfig.ORM;
 import com.ifengxue.plugin.generator.source.EntitySourceParser;
 import com.ifengxue.plugin.generator.source.JpaRepositorySourceParser;
+import com.ifengxue.plugin.generator.source.ServiceImpSourceParser;
+import com.ifengxue.plugin.generator.source.ServiceSourceParser;
 import com.ifengxue.plugin.i18n.LocaleContextHolder;
 import com.ifengxue.plugin.util.WindowUtil;
 import com.intellij.ide.util.DirectoryUtil;
@@ -30,6 +32,13 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.runtime.RuntimeServices;
+import org.apache.velocity.runtime.log.LogChute;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
@@ -38,16 +47,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import javax.swing.DefaultCellEditor;
-import javax.swing.JCheckBox;
-import javax.swing.JFrame;
-import javax.swing.JTable;
-import javax.swing.WindowConstants;
-import javax.swing.table.AbstractTableModel;
-import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.runtime.RuntimeConstants;
-import org.apache.velocity.runtime.RuntimeServices;
-import org.apache.velocity.runtime.log.LogChute;
 
 public class SelectTablesFrame {
 
@@ -264,7 +263,11 @@ public class SelectTablesFrame {
       velocityEngine.addProperty("input.encoding", encoding);
       velocityEngine.addProperty("output.encoding", encoding);
       JpaRepositorySourceParser repositorySourceParser = new JpaRepositorySourceParser();
+	    ServiceSourceParser serviceSourceParser = new ServiceSourceParser();
+	    ServiceImpSourceParser serviceImpSourceParser = new ServiceImpSourceParser();
       repositorySourceParser.setVelocityEngine(velocityEngine, encoding);
+	    serviceSourceParser.setVelocityEngine(velocityEngine, encoding);
+	    serviceImpSourceParser.setVelocityEngine(velocityEngine, encoding);
 
       EntitySourceParser sourceParser = new EntitySourceParser();
 
@@ -334,6 +337,9 @@ public class SelectTablesFrame {
             .setUseClassComment(config.isGenerateClassComment())
             .setUseFieldComment(config.isGenerateFieldComment())
             .setUseMethodComment(config.isGenerateMethodComment())
+            .setServiceSubPackageName(config.getServicePackage())
+		        .setExtendsServiceName(config.getServiceClass())
+		        .setExtendsServiceImpName(config.getServiceImpClass())
             .setUseDefaultValue(true)
             .setUseWrapper(true)
             .setUseLombok(config.isUseLombok()));
@@ -342,39 +348,63 @@ public class SelectTablesFrame {
         // 生成源码
         String sourceCode = sourceParser.parse(generatorConfig, table);
         WriteCommandAction.runWriteCommandAction(project, () -> {
+
+        	//entity
           String filename = table.getEntityName() + ".java";
-          writeContent(project, filename, config.getEntityDirectory(), sourceCode);
+          writeContent(project, filename, config.getEntityDirectory(), sourceCode,FileTypeEnum.ENTITY);
           if (!config.isGenerateRepository()) {
             if (generateCount.decrementAndGet() <= 0) {
               ApplicationManager.getApplication().invokeAndWait(frameHolder::requestFocus);
             }
             return;
           }
+
+          //jpa
           filename = table.getEntityName() + "Repository.java";
           String repositorySourceCode = repositorySourceParser.parse(generatorConfig, table);
-          writeContent(project, filename, config.getRepositoryDirectory(), repositorySourceCode);
+          writeContent(project, filename, config.getRepositoryDirectory(), repositorySourceCode,FileTypeEnum.REPOSITORY);
           if (generateCount.decrementAndGet() <= 0) {
             ApplicationManager.getApplication().invokeAndWait(frameHolder::requestFocus);
           }
+
+
+          //service
+	        filename = table.getEntityName() + "Service.java";
+	        String serviceSourceCode = serviceSourceParser.parse(generatorConfig, table);
+	        writeContent(project, filename, config.getServiceDirectory(), serviceSourceCode,FileTypeEnum.SERVICE);
+	        if (generateCount.decrementAndGet() <= 0) {
+		        ApplicationManager.getApplication().invokeAndWait(frameHolder::requestFocus);
+	        }
+
+	        //serviceImp
+	        filename = table.getEntityName() + "ServiceImp.java";
+	        String serviceImpSourceCode = serviceImpSourceParser.parse(generatorConfig, table);
+	        writeContent(project, filename, config.getServiceDirectory() + "/imp", serviceImpSourceCode,FileTypeEnum.SERVICE_IMP);
+	        if (generateCount.decrementAndGet() <= 0) {
+		        ApplicationManager.getApplication().invokeAndWait(frameHolder::requestFocus);
+	        }
         });
       }
     }
 
-    private void writeContent(Project project, String filename, String directory, String sourceCode) {
+    private void writeContent(Project project, String filename, String directory, String sourceCode, FileTypeEnum fileType) {
       PsiDirectory psiDirectory = DirectoryUtil.mkdirs(PsiManager.getInstance(project), directory);
       PsiFile psiFile = psiDirectory.findFile(filename);
       if (psiFile != null) {
         // 切换UI线程
         ApplicationManager.getApplication().invokeLater(() -> {
-          int selectButton = Messages
-              .showOkCancelDialog(
-                  LocaleContextHolder.format("file_already_exists_overwritten", filename),
-                  LocaleContextHolder.format("prompt"),
-                  Messages.getQuestionIcon());
-          // 不覆盖
-          if (selectButton != Messages.OK) {
-            return;
-          }
+//          int selectButton = Messages
+//              .showOkCancelDialog(
+//                  LocaleContextHolder.format("file_already_exists_overwritten", filename),
+//                  LocaleContextHolder.format("prompt"),
+//                  Messages.getQuestionIcon());
+//          // 不覆盖
+//          if (selectButton != Messages.OK) {
+//            return;
+//          }
+	        if (!fileType.equals(FileTypeEnum.ENTITY)){
+	        	return;
+	        }
           // 切换IO线程
           WriteCommandAction.runWriteCommandAction(project, () -> {
             PsiFile pf = psiDirectory.findFile(filename);

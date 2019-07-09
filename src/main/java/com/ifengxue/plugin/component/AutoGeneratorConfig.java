@@ -1,6 +1,7 @@
 package com.ifengxue.plugin.component;
 
 import com.intellij.openapi.project.Project;
+
 import java.io.Serializable;
 import java.util.Set;
 
@@ -26,11 +27,75 @@ public class AutoGeneratorConfig implements Serializable {
   private boolean generateFieldComment;
   private boolean generateMethodComment;
 
-  public String getRemoveTablePrefix() {
+  private String serviceDirectory;
+  private String servicePackage;
+  private String serviceClass;
+  private String serviceImpClass;
+
+	@Override
+	public String toString() {
+		return "AutoGeneratorConfig{" +
+				"removeTablePrefix='" + removeTablePrefix + '\'' +
+				", removeFieldPrefix='" + removeFieldPrefix + '\'' +
+				", extendBaseClass='" + extendBaseClass + '\'' +
+				", entityPackage='" + entityPackage + '\'' +
+				", repositoryPackage='" + repositoryPackage + '\'' +
+				", excludeFields=" + excludeFields +
+				", projectBasePath='" + projectBasePath + '\'' +
+				", entityDirectory='" + entityDirectory + '\'' +
+				", repositoryDirectory='" + repositoryDirectory + '\'' +
+				", useLombok=" + useLombok +
+				", generateRepository=" + generateRepository +
+				", implementSerializable=" + implementSerializable +
+				", generateClassComment=" + generateClassComment +
+				", generateFieldComment=" + generateFieldComment +
+				", generateMethodComment=" + generateMethodComment +
+				", serviceDirectory='" + serviceDirectory + '\'' +
+				", servicePackage='" + servicePackage + '\'' +
+				", serviceClass='" + serviceClass + '\'' +
+				", serviceImpClass='" + serviceImpClass + '\'' +
+				'}';
+	}
+
+	public String getServicePackage() {
+		return servicePackage;
+	}
+
+	public AutoGeneratorConfig setServicePackage(String servicePackage) {
+		this.servicePackage = servicePackage;
+		return this;
+	}
+
+	public String getRemoveTablePrefix() {
     return removeTablePrefix;
   }
 
-  public void setRemoveTablePrefix(String removeTablePrefix) {
+	public String getServiceDirectory() {
+		return serviceDirectory;
+	}
+
+	public AutoGeneratorConfig setServiceDirectory(String serviceDirectory) {
+		this.serviceDirectory = serviceDirectory;
+		return this;
+	}
+
+	public String getServiceClass() {
+		return serviceClass;
+	}
+
+	public void setServiceClass(String serviceClass) {
+		this.serviceClass = serviceClass;
+	}
+
+	public String getServiceImpClass() {
+		return serviceImpClass;
+	}
+
+	public void setServiceImpClass(String serviceImpClass) {
+		this.serviceImpClass = serviceImpClass;
+	}
+
+	public void setRemoveTablePrefix(String removeTablePrefix) {
     this.removeTablePrefix = removeTablePrefix;
   }
 
@@ -150,20 +215,4 @@ public class AutoGeneratorConfig implements Serializable {
     return this;
   }
 
-  @Override
-  public String toString() {
-    return "AutoGeneratorConfig{" +
-        "removeTablePrefix='" + removeTablePrefix + '\'' +
-        ", removeFieldPrefix='" + removeFieldPrefix + '\'' +
-        ", extendBaseClass='" + extendBaseClass + '\'' +
-        ", entityPackage='" + entityPackage + '\'' +
-        ", repositoryPackage='" + repositoryPackage + '\'' +
-        ", useLombok=" + useLombok +
-        ", generateRepository=" + generateRepository +
-        ", implementSerializable=" + implementSerializable +
-        ", generateClassComment=" + generateClassComment +
-        ", generateFieldComment=" + generateFieldComment +
-        ", generateMethodComment=" + generateMethodComment +
-        '}';
-  }
 }

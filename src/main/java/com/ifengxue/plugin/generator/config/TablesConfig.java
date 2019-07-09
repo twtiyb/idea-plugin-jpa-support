@@ -22,8 +22,28 @@ public class TablesConfig {
   private String repositoryPackageName;
   private String basePackageName;
   private String extendsEntityName;
+  private String extendsServiceName;
+  private String extendsServiceImpName;
 
-  public ORM getOrm() {
+	public String getExtendsServiceName() {
+		return extendsServiceName;
+	}
+
+	public TablesConfig setExtendsServiceName(String extendsServiceName) {
+		this.extendsServiceName = extendsServiceName;
+		return this;
+	}
+
+	public String getExtendsServiceImpName() {
+		return extendsServiceImpName;
+	}
+
+	public TablesConfig setExtendsServiceImpName(String extendsServiceImpName) {
+		this.extendsServiceImpName = extendsServiceImpName;
+		return this;
+	}
+
+	public ORM getOrm() {
     return orm;
   }
 

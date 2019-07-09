@@ -1,0 +1,11 @@
+#if(!$package.isEmpty())
+package $package;
+#end
+
+#foreach($importClass in $importClassList)
+import $importClass;
+#end
+
+public interface ${entitySimpleName}Service<${entitySimpleName}> extends ${superClassName}<${entitySimpleName}> {
+
+}

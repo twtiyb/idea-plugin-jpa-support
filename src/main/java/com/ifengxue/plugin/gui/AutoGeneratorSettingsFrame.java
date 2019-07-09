@@ -1,8 +1,5 @@
 package com.ifengxue.plugin.gui;
 
-import static com.ifengxue.plugin.util.Key.createKey;
-import static java.util.stream.Collectors.joining;
-
 import com.ifengxue.plugin.Holder;
 import com.ifengxue.plugin.component.AutoGeneratorConfig;
 import com.ifengxue.plugin.component.AutoGeneratorSettings;
@@ -25,13 +22,12 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiPackage;
 import com.intellij.psi.search.GlobalSearchScope;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import javax.swing.JFrame;
-import javax.swing.WindowConstants;
+
+import javax.swing.*;
+import java.util.*;
+
+import static com.ifengxue.plugin.util.Key.createKey;
+import static java.util.stream.Collectors.joining;
 
 public class AutoGeneratorSettingsFrame {
 
@@ -106,6 +102,53 @@ public class AutoGeneratorSettingsFrame {
       }
       frameHolder.requestFocus();
     });
+
+    // 选择service package
+    autoGeneratorSettingsHolder.getBtnChooseServicePackage().addActionListener(event -> {
+      PackageChooser packageChooser = new PackageChooserDialog(
+          LocaleContextHolder.format("select_service_package"), project);
+      packageChooser.show();
+      PsiPackage selectedPackage = packageChooser.getSelectedPackage();
+      if (selectedPackage != null) {
+        String qualifiedName = selectedPackage.getQualifiedName();
+        autoGeneratorSettingsHolder.getTextServicePackage().setText(qualifiedName);
+        PsiDirectory[] directories = selectedPackage.getDirectories(GlobalSearchScope.projectScope(project));
+        PsiDirectory directory = directories[0];
+	      config.setServicePackage(qualifiedName);
+	      config.setServiceDirectory(directory.getVirtualFile().getPath());
+      }
+      frameHolder.requestFocus();
+    });
+
+    // 选择service parent service class
+    autoGeneratorSettingsHolder.getBtnChooseService().addActionListener(event -> {
+	    TreeJavaClassChooserDialog classChooser = new TreeJavaClassChooserDialog(
+			    LocaleContextHolder.format("select_service_class"), project);
+	    classChooser.show();
+	    PsiClass selectedClass = classChooser.getSelected();
+	    if (selectedClass != null) {
+		    String qualifiedName = selectedClass.getQualifiedName();
+		    autoGeneratorSettingsHolder.getTextServiceClass().setText(qualifiedName);
+		    config.setServiceClass(qualifiedName);
+	    }
+	    frameHolder.requestFocus();
+    });
+
+    // 选择service parent service Imp class
+    autoGeneratorSettingsHolder.getBtnChooseServiceImp().addActionListener(event -> {
+	    TreeJavaClassChooserDialog classChooser = new TreeJavaClassChooserDialog(
+			    LocaleContextHolder.format("select_service_imp_class"), project);
+	    classChooser.show();
+	    PsiClass selectedClass = classChooser.getSelected();
+	    if (selectedClass != null) {
+		    String qualifiedName = selectedClass.getQualifiedName();
+		    autoGeneratorSettingsHolder.getTextServiceImpClass().setText(qualifiedName);
+		    config.setServiceImpClass(qualifiedName);
+	    }
+	    frameHolder.requestFocus();
+    });
+
+
     autoGeneratorSettingsHolder.getBtnCancel().addActionListener(event -> frameHolder.dispose());
     autoGeneratorSettingsHolder.getBtnNext().addActionListener(
         event -> {
@@ -117,6 +160,7 @@ public class AutoGeneratorSettingsFrame {
               Args.notEmpty(autoGeneratorSettingsHolder.getTextEntityPackage().getText().trim(), "entity package",
                   frameHolder));
           config.setRepositoryPackage(autoGeneratorSettingsHolder.getTxtRepositoryPackage().getText().trim());
+
           Set<String> excludeFieldSet = new HashSet<>();
           for (String excludeField : autoGeneratorSettingsHolder.getTextExcludeFields().getText().trim().split(",")) {
             excludeFieldSet.add(excludeField.trim());
@@ -185,6 +229,12 @@ public class AutoGeneratorSettingsFrame {
     config.setEntityDirectory(projectProperties.getValue(createKey("entity_directory"), ""));
     settings.getTxtRepositoryPackage().setText(projectProperties.getValue(createKey("repository_package"), ""));
     config.setRepositoryDirectory(projectProperties.getValue(createKey("repository_directory"), ""));
+
+
+	  settings.getTextServicePackage().setText(projectProperties.getValue(createKey("service_package"), ""));
+	  settings.getTextServiceClass().setText(projectProperties.getValue(createKey("service_class"), ""));
+	  settings.getTextServiceImpClass().setText(projectProperties.getValue(createKey("service_imp_class"), ""));
+    config.setServiceDirectory(projectProperties.getValue(createKey("service_directory"), ""));
   }
 
   private void saveTextField(AutoGeneratorConfig config) {
@@ -204,6 +254,10 @@ public class AutoGeneratorSettingsFrame {
     projectProperties.setValue(createKey("entity_directory"), config.getEntityDirectory());
     projectProperties.setValue(createKey("repository_package"), config.getRepositoryPackage());
     projectProperties.setValue(createKey("repository_directory"), config.getRepositoryDirectory());
+    projectProperties.setValue(createKey("service_directory"), config.getServiceDirectory());
+    projectProperties.setValue(createKey("service_package"), config.getServicePackage());
+    projectProperties.setValue(createKey("service_class"), config.getServiceClass());
+    projectProperties.setValue(createKey("service_imp_class"), config.getServiceImpClass());
   }
 
   public static void show(List<TableSchema> tableSchemaList) {
