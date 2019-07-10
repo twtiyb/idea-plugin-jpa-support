@@ -6,6 +6,6 @@ package $package;
 import $importClass;
 #end
 
-public interface ${entitySimpleName}Service<T> extends ${superClassName}<T> {
+public interface ${entitySimpleName}Service extends ${superClassName}<${entitySimpleName}> {
 
 }

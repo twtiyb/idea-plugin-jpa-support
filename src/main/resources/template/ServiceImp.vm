@@ -2,10 +2,12 @@
 package $package;
 #end
 
+import org.springframework.stereotype.Service;
 #foreach($importClass in $importClassList)
 import $importClass;
 #end
 
-public class $simpleName extends ${superImpClassName}<${entitySimpleName}Repository, ${entitySimpleName}> implements ${superClassName}<${entitySimpleName}> {
+@Service
+public class $simpleName extends ${superImpClassName}<${entitySimpleName}Repository, ${entitySimpleName}> implements ${superClassName} {
 
 }

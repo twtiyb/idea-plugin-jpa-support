@@ -36,7 +36,7 @@ public class ServiceImpSourceParser implements SourceParser, VelocityEngineAware
 
 		context.put("simpleName", table.getEntityName() + "ServiceImp");
 		context.put("entitySimpleName", table.getEntityName());
-		context.put("superClassName", tablesConfig.getExtendsServiceName());
+		context.put("superClassName", table.getEntityName() + "Service");
 		context.put("superImpClassName", tablesConfig.getExtendsServiceImpName());
 		context.put("primaryKeyDataType",
 				Optional.ofNullable(table.getPrimaryKeyClassType())
