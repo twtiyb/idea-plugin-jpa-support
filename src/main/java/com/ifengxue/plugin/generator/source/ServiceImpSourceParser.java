@@ -27,15 +27,17 @@ public class ServiceImpSourceParser implements SourceParser, VelocityEngineAware
 			context.put("package", "");
 			context.put("importClassList", Collections.emptyList());
 		} else {
-			context.put("package", tablesConfig.getServiceSubPackageName());
+			context.put("package", tablesConfig.getServiceSubPackageName()+".imp");
 			context.put("importClassList", Arrays.asList(tablesConfig.getEntityPackageName() + "." + table.getEntityName()
-					, tablesConfig.getServiceSubPackageName() + "." + table.getEntityName() + "Service"
+					, config.getTablesConfig().getServiceSubPackageName() + "." + table.getEntityName() + "Service"
+					, config.getTablesConfig().getRepositoryPackageName() + "." + table.getEntityName() + "Repository"
 			));
 		}
 
 		context.put("simpleName", table.getEntityName() + "ServiceImp");
 		context.put("entitySimpleName", table.getEntityName());
 		context.put("superClassName", tablesConfig.getExtendsServiceName());
+		context.put("superImpClassName", tablesConfig.getExtendsServiceImpName());
 		context.put("primaryKeyDataType",
 				Optional.ofNullable(table.getPrimaryKeyClassType())
 						.map(StringHelper::getWrapperClass)

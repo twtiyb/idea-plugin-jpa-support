@@ -172,6 +172,9 @@ public class AutoGeneratorSettingsFrame {
           config.setGenerateClassComment(autoGeneratorSettingsHolder.getChkBoxGenerateClassComment().isSelected());
           config.setGenerateFieldComment(autoGeneratorSettingsHolder.getChkBoxGenerateFieldComment().isSelected());
           config.setGenerateMethodComment(autoGeneratorSettingsHolder.getChkBoxGenerateMethodComment().isSelected());
+	        config.setServicePackage(autoGeneratorSettingsHolder.getTextServicePackage().getText().trim());
+	        config.setServiceClass(autoGeneratorSettingsHolder.getTextServiceClass().getText().trim());
+	        config.setServiceImpClass(autoGeneratorSettingsHolder.getTextServiceImpClass().getText().trim());
           if (config.getEntityPackage().isEmpty()) {
             autoGeneratorSettingsHolder.getTextEntityPackage().requestFocus();
             return;
@@ -234,6 +237,7 @@ public class AutoGeneratorSettingsFrame {
 	  settings.getTextServicePackage().setText(projectProperties.getValue(createKey("service_package"), ""));
 	  settings.getTextServiceClass().setText(projectProperties.getValue(createKey("service_class"), ""));
 	  settings.getTextServiceImpClass().setText(projectProperties.getValue(createKey("service_imp_class"), ""));
+
     config.setServiceDirectory(projectProperties.getValue(createKey("service_directory"), ""));
   }
 

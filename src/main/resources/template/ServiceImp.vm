@@ -6,6 +6,6 @@ package $package;
 import $importClass;
 #end
 
-public class $simpleName extends ${superImpClassName}<${entitySimpleName}Repository, ${entitySimpleName}> implements ${entitySimpleName}Service<${entitySimpleName}> {
+public class $simpleName extends ${superImpClassName}<${entitySimpleName}Repository, ${entitySimpleName}> implements ${superClassName}<${entitySimpleName}> {
 
 }
