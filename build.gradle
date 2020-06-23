@@ -28,7 +28,7 @@ sourceCompatibility = 1.8
 
 
 intellij {
-    version '2019.1.3'
+    version '2020.1'
 }
 
 repositories {
